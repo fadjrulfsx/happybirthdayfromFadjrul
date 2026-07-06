@@ -157,10 +157,10 @@
     .plate{
       width:320px;
       height:12px;
-      transform: translateX(30px);
+      /* FIX: Menghapus translateX(30px) agar piring pas di tengah */
       background: linear-gradient(180deg,#fff,#f3f3f3);
       border-radius:50%;
-      margin-top:-10px;
+      margin: -10px auto 0 auto;
       box-shadow:0 6px 18px rgba(0,0,0,0.08);
     }
 
@@ -179,9 +179,11 @@
     button.ghost{
       background:transparent;
       border:1px solid rgba(0,0,0,0.08);
-      padding:8px 12px;
+      padding:10px 16px;
       border-radius:10px;
       cursor:pointer;
+      font-weight:600;
+      color: var(--accent);
     }
 
     /* Confetti pieces */
@@ -222,31 +224,33 @@
       top: 0; left: 0;
       width: 100%; height: 100%;
       background: rgba(0,0,0,0.6);
-      display: none; /* awalnya disembunyikan */
+      display: none; 
       justify-content: center;
       align-items: center;
+      z-index: 10000;
     }
 
     /* Popup box */
     .popup-box {
       background: white;
-      padding: 20px;
-      border-radius: 10px;
+      padding: 25px;
+      border-radius: 15px;
       text-align: center;
-      max-width: 300px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
-      animation: fadeIn 0.5s ease;
+      max-width: 320px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      animation: fadeIn 0.3s ease;
     }
 
-    .popup-box h2 { color: #d81b60; }
-    .popup-box p { margin: 10px 0; }
+    .popup-box h2 { color: #d81b60; margin-top: 0; }
+    .popup-box p { margin: 12px 0; font-size: 0.95rem; line-height: 1.5; }
 
     .popup-box button {
       background: #d81b60; color: white;
       border: none;
-      padding: 8px 15px;
-      border-radius: 5px;
+      padding: 10px 20px;
+      border-radius: 8px;
       cursor: pointer;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -278,14 +282,16 @@
   <div class="controls">
     <button class="primary" id="startBtn">Mulai Animasi</button>
     <button class="ghost" id="resetBtn">Reset</button>
+    <!-- FIX: Tombol kejutan dimasukkan ke sini agar rapi -->
+    <button class="ghost" onclick="showPopup()">Klik untuk kejutan</button>
   </div>
-  <button onclick="showPopup()">Klik untuk kejutan</button>
+
   <div class="popup-overlay" id="popup">
     <div class="popup-box">
       <h2>Selamat Ulang Tahun!</h2>
-      <p>"Selamat ulang tahun lutfa Semoga Allah selalu melimpahkan kesehatan, kebahagiaan, dan keberkahan dalam setiap langkahmu.
+      <p>"Selamat ulang tahun Lutfa. Semoga Allah selalu melimpahkan kesehatan, kebahagiaan, dan keberkahan dalam setiap langkahmu.
          Semoga cita-citamu tercapai, dan hatimu selalu dipenuhi ketenangan serta cinta dari orang-orang terdekat."</p>
-         <p>SEMOGA NANTI PAS MIMPI KAMU KETEMU YOUR WIFE KENYU</p>
+         <p><strong>SEMOGA NANTI PAS MIMPI KAMU KETEMU YOUR WIFE KENYU! 🤣</strong></p>
       <button onclick="closePopup()">Tutup</button>
     </div>
   </div>
@@ -300,6 +306,7 @@
     function closePopup() {
       document.getElementById("popup").style.display = "none";
     }
+    
     // Elements
     const startBtn = document.getElementById('startBtn');
     const resetBtn = document.getElementById('resetBtn');
@@ -338,6 +345,8 @@
         const flame = c.querySelector('.flame');
         if(flame) flame.style.opacity = 0;
       });
+      // FIX: Menghapus sisa-sisa sparkle lama jika ada
+      document.querySelectorAll('.sparkle').forEach(s=>s.remove());
       // remove confetti if any
       document.querySelectorAll('.confetti').forEach(n=>n.remove());
       // stop audio
@@ -401,7 +410,7 @@
       setTimeout(()=> {
         s.style.opacity = 0;
         s.style.transform = 'scale(0.6)';
-        setTimeout(()=> s.remove(), 400);
+        setTimeout(()=> { if(s.parentNode) s.remove(); }, 400);
       }, 420);
     }
 
@@ -428,10 +437,10 @@
         document.body.appendChild(el);
 
         // compute random trajectory
-        const angle = (fromLeft ? (Math.random()*0.6 + 0.2) : (Math.random()*-0.6 - 0.2)); // radians-ish for x offset
+        const angle = (fromLeft ? (Math.random()*0.6 + 0.2) : (Math.random()*-0.6 - 0.2)); 
         const distanceY = 0.45*window.innerHeight + Math.random()*0.35*window.innerHeight;
         const distanceX = (Math.random()*0.6 + 0.4) * window.innerWidth * (fromLeft ? 0.35 : -0.35);
-        const duration = 900 + Math.random()*900; // faster pieces and variety
+        const duration = 900 + Math.random()*900; 
 
         // animate using JS for better control
         const start = performance.now();
@@ -458,7 +467,6 @@
 
     // Event listeners
     startBtn.addEventListener('click', async ()=>{
-      // create 3 candles by default
       createCandles(3);
       resetScene();
       await delay(80);
